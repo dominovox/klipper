@@ -91,6 +91,27 @@ config RP2040_STAGE2_CLKDIV
 
 
 ######################################################################
+# Startup Delay options
+######################################################################
+
+choice
+    help
+        Setting this option to 64ms can help on some RP2040-based
+        boards, where the XOSC is sloppy/takes longer to stabilize.
+    prompt "XOSC Startup Delay" if LOW_LEVEL_OPTIONS
+    config RP2040_STARTUP_DELAY_1
+        bool "1ms"
+    config RP2040_STARTUP_DELAY_64
+        bool "64ms"
+endchoice
+
+config RP2040_XOSC_STARTUP_DELAY
+    int
+    default 64 if RP2040_STARTUP_DELAY_64
+    default 1
+
+
+######################################################################
 # Communication inteface
 ######################################################################
 

@@ -5,6 +5,7 @@
 // This file may be distributed under the terms of the GNU GPLv3 license.
 
 #include <stdint.h> // uint32_t
+#include "autoconf.h" // CONFIG_RP2040_XOSC_STARTUP_DELAY
 #include "board/misc.h" // bootloader_request
 #include "generic/armcm_reset.h" // try_request_canboot
 #include "hardware/structs/clocks.h" // clock_hw_t
@@ -58,6 +59,8 @@ bootloader_request(void)
 #define FREQ_SYS 125000000
 #define FREQ_USB 48000000
 
+#define STARTUP_DELAY (DIV_ROUND_UP(FREQ_XOSC, 1000 * 256) * CONFIG_RP2040_XOSC_STARTUP_DELAY )
+
 void
 enable_pclock(uint32_t reset_bit)
 {
@@ -82,7 +85,7 @@ get_pclock_frequency(uint32_t reset_bit)
 static void
 xosc_setup(void)
 {
-    xosc_hw->startup = DIV_ROUND_UP(FREQ_XOSC, 1000 * 256); // 1ms
+    xosc_hw->startup = STARTUP_DELAY;
     xosc_hw->ctrl = (XOSC_CTRL_FREQ_RANGE_VALUE_1_15MHZ
                      | (XOSC_CTRL_ENABLE_VALUE_ENABLE << XOSC_CTRL_ENABLE_LSB));
     while(!(xosc_hw->status & XOSC_STATUS_STABLE_BITS))
